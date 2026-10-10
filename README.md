@@ -20,11 +20,11 @@
 1. افتح [Vercel](https://vercel.com/new).
 2. اختر مستودع GitHub.
 3. اترك إعدادات Framework كما هي؛ المشروع يستخدم Vercel Functions مباشرة.
-4. أضف متغير البيئة التالي قبل النشر:
+4. اضغط **Deploy**؛ عنوان الخادم الهدف مضمّن داخل `api/[...path].ts`:
 
 | المتغير | الوصف | مثال |
 |---|---|---|
-| `TARGET_DOMAIN` | عنوان الخادم الهدف مع البروتوكول | `https://origin.example.com` |
+| `TARGET_DOMAIN` | عنوان الخادم الهدف المضمّن داخل الكود | `https://vps.thumbayan.com:443` |
 
 5. اضغط **Deploy**.
 
@@ -51,15 +51,10 @@ npm run typecheck
 npx vercel dev
 ```
 
-قبل تشغيل `vercel dev`، أنشئ ملف `.env.local` وضع فيه:
-
-```env
-TARGET_DOMAIN=https://your-upstream.example.com
-```
-
 ## ملاحظات مهمة
 
-- لا تضع عنوان الخادم الهدف داخل الكود؛ استخدم `TARGET_DOMAIN` في إعدادات Vercel.
+- عنوان `TARGET_DOMAIN` الحالي مضمّن داخل الكود بقيمة `https://vps.thumbayan.com:443`.
+- لتغيير الخادم الهدف، عدّل الثابت `TARGET_DOMAIN` في `api/[...path].ts` ثم أعد النشر.
 - يجب أن يكون الخادم الهدف متاحًا من شبكة Vercel وأن يقبل اتصالات HTTPS صحيحة.
 - دوال Vercel ليست مناسبة للاتصالات طويلة العمر أو WebSocket؛ هذا المشروع يمرر طلبات HTTP قصيرة/محدودة بمهلة تصل إلى 55 ثانية للوجهة الهدف.
 - استخدم هذا الريلاي فقط مع خادم تملكه أو لديك تصريح صريح بإدارته.

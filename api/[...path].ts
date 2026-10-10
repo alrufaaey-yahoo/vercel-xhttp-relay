@@ -3,6 +3,8 @@ import { request as httpRequest } from 'node:http';
 import { request as httpsRequest } from 'node:https';
 import { URL } from 'node:url';
 
+const TARGET_DOMAIN = 'https://vps.thumbayan.com:443';
+
 const HOP_BY_HOP_HEADERS = new Set([
   'connection',
   'keep-alive',
@@ -22,12 +24,7 @@ const FORWARDED_HEADERS = new Set([
 ]);
 
 function getTargetUrl(req: IncomingMessage): URL {
-  const targetDomain = process.env.TARGET_DOMAIN;
-  if (!targetDomain) {
-    throw new Error('TARGET_DOMAIN is not configured');
-  }
-
-  const base = new URL(targetDomain);
+  const base = new URL(TARGET_DOMAIN);
   const queryPath = (req as IncomingMessage & { query?: { path?: string | string[] } }).query?.path;
   const path = Array.isArray(queryPath) ? queryPath.join('/') : queryPath ?? '';
   const incomingUrl = new URL(req.url ?? '/', 'http://vercel.local');
