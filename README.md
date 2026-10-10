@@ -1,131 +1,79 @@
-<div align="center">
+# Vercel XHTTP Relay
 
-# 🔁 Replit XHTTP Relay
+ريلاي XHTTP خفيف يعمل كـ **Reverse Proxy** على Vercel، ويحوّل الطلبات إلى خادمك الهدف مع تمرير الأساليب والبيانات والهيدرز الضرورية.
 
-<img src="https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white" />
-<img src="https://img.shields.io/badge/Replit-Deploy-F26207?style=for-the-badge&logo=replit&logoColor=white" />
-<img src="https://img.shields.io/badge/XHTTP-Relay-blue?style=for-the-badge" />
+## ما الذي تغير؟
 
-**ريلاي XHTTP خفيف وسريع يعمل على Replit — يقوم بتوجيه الطلبات إلى سيرفرك الخاص (VPS) عبر بروكسي عكسي.**
+تم نقل المشروع من خادم Node.js دائم مخصص لـ Replit إلى **TypeScript Serverless Function** متوافقة مع Vercel:
 
----
+- نقطة الدخول: `api/[...path].ts`
+- إعداد النشر: `vercel.json`
+- لا يوجد خادم يستمع إلى منفذ محلي؛ Vercel يدير الدالة تلقائيًا.
+- أزيلت ملفات `.replit` و`replit.nix` الخاصة بـ Replit.
 
-</div>
+## النشر على Vercel
 
-## 📋 الوصف
+### 1. إنشاء المشروع
 
-هذا المشروع عبارة عن **Reverse Proxy Relay** مبني بـ Node.js، مصمم للعمل على منصة **Replit** كوسيط بين العميل والسيرفر الهدف. يقوم بتمرير جميع الطلبات (GET, POST, PUT, DELETE, etc.) إلى الدومين المستهدف مع تنظيف الهيدرز غير الضرورية للحفاظ على الخصوصية والأمان.
+ارفع هذا المستودع إلى GitHub ثم:
 
-## ✨ المميزات
+1. افتح [Vercel](https://vercel.com/new).
+2. اختر مستودع GitHub.
+3. اترك إعدادات Framework كما هي؛ المشروع يستخدم Vercel Functions مباشرة.
+4. أضف متغير البيئة التالي قبل النشر:
 
-| الميزة | الوصف |
-|--------|-------|
-| 🚀 **خفيف وسريع** | لا يحتاج أي مكتبات خارجية — يعمل بـ Node.js الأساسي فقط |
-| 🔒 **تنظيف الهيدرز** | يزيل تلقائياً الهيدرز الحساسة والمكشوفة |
-| 🌐 **دعم HTTP/HTTPS** | يدعم التوجيه لكلا البروتوكولين |
-| 📡 **Streaming** | يدعم تمرير البيانات بالـ Stream للأداء العالي |
-| ☁️ **جاهز للنشر** | مُعد مسبقاً للنشر على Replit بضغطة زر |
+| المتغير | الوصف | مثال |
+|---|---|---|
+| `TARGET_DOMAIN` | عنوان الخادم الهدف مع البروتوكول | `https://origin.example.com` |
 
-## ⚠️ إعداد مهم — تعديل الدومين المستهدف
+5. اضغط **Deploy**.
 
-> **يجب عليك تعديل `TARGET_DOMAIN` في ملف [`index.js`](https://github.com/alrufaaey-yahoo/replit-xhttp-relay/blob/master/index.js) ليشير إلى سيرفرك الخاص (VPS) قبل التشغيل.**
+### 2. اختبار الريلاي
 
-افتح ملف `index.js` وعدّل السطر التالي:
+بعد النشر، يمرر الرابط العام الطلبات إلى الخادم الهدف. أمثلة:
 
-```javascript
-const TARGET_DOMAIN = 'https://yourvps:443';
+```bash
+curl https://YOUR-PROJECT.vercel.app/health
+curl -X POST https://YOUR-PROJECT.vercel.app/api/login \
+  -H 'content-type: application/json' \
+  -d '{"username":"demo"}'
 ```
 
-استبدل `yourvps` بعنوان IP أو دومين سيرفرك الخاص. مثال:
+يستخدم إعداد Vercel إعادة كتابة تلقائية من المسارات العامة (باستثناء `/api`) إلى الدالة `api/[...path].ts`، لذلك لا تحتاج إلى إضافة `/api` عند استخدام الرابط العام. وإذا استدعيت الدالة مباشرة، فالمسار `/api/<path>` مدعوم أيضًا.
 
-```javascript
-const TARGET_DOMAIN = 'https://123.456.789.0:443';
+## التشغيل والتحقق محليًا
+
+يتطلب Node.js 18 أو أحدث:
+
+```bash
+npm install
+npm run typecheck
+npx vercel dev
 ```
 
-أو باستخدام دومين:
+قبل تشغيل `vercel dev`، أنشئ ملف `.env.local` وضع فيه:
 
-```javascript
-const TARGET_DOMAIN = 'https://mydomain.com:443';
+```env
+TARGET_DOMAIN=https://your-upstream.example.com
 ```
 
-## 🚀 طريقة النشر على Replit
+## ملاحظات مهمة
 
-### الطريقة 1: الاستيراد من GitHub
-1. سجل الدخول إلى [Replit](https://replit.com)
-2. اضغط على **Create Repl** ثم **Import from GitHub**
-3. الصق رابط المستودع:
-   ```
-   https://github.com/alrufaaey-yahoo/replit-xhttp-relay
-   ```
-4. اضغط **Import from GitHub**
-5. **عدّل `TARGET_DOMAIN`** في `index.js` كما هو موضح أعلاه
-6. اضغط **Run** للتشغيل
-7. اضغط **Deploy** للنشر والحصول على رابط دائم
+- لا تضع عنوان الخادم الهدف داخل الكود؛ استخدم `TARGET_DOMAIN` في إعدادات Vercel.
+- يجب أن يكون الخادم الهدف متاحًا من شبكة Vercel وأن يقبل اتصالات HTTPS صحيحة.
+- دوال Vercel ليست مناسبة للاتصالات طويلة العمر أو WebSocket؛ هذا المشروع يمرر طلبات HTTP قصيرة/محدودة بمهلة تصل إلى 55 ثانية للوجهة الهدف.
+- استخدم هذا الريلاي فقط مع خادم تملكه أو لديك تصريح صريح بإدارته.
+- لا تسجل الدالة محتوى الطلبات أو الاستجابات.
 
-### الطريقة 2: إنشاء يدوي
-1. أنشئ **Repl** جديد واختر **Node.js**
-2. انسخ محتوى `index.js` إلى المشروع
-3. **عدّل `TARGET_DOMAIN`** ليشير إلى سيرفرك
-4. اضغط **Run** ثم **Deploy**
+## البنية
 
-## 📁 هيكل المشروع
-
+```text
+.
+├── api/
+│   └── [...path].ts   # دالة Vercel Serverless
+├── .env.example       # مثال متغير البيئة
+├── package.json
+├── tsconfig.json
+├── vercel.json
+└── README.md
 ```
-replit-xhttp-relay/
-├── index.js          # الخادم الرئيسي — الريلاي
-├── package.json      # إعدادات المشروع
-├── .replit           # إعدادات تشغيل ونشر Replit
-├── replit.nix        # بيئة Nix لـ Replit
-└── README.md         # هذا الملف
-```
-
-## 🔧 كيف يعمل
-
-```
-العميل  ──►  Replit Relay  ──►  السيرفر الهدف (VPS)
-  ◄──          ◄──                ◄──
-```
-
-1. يستقبل الريلاي الطلب من العميل
-2. ينظف الهيدرز الحساسة (مثل `host`, `x-forwarded-*`, `proxy-*`)
-3. يمرر الطلب إلى `TARGET_DOMAIN`
-4. يعيد الاستجابة من السيرفر الهدف إلى العميل
-
-### الهيدرز المحذوفة تلقائياً
-
-| Header | السبب |
-|--------|-------|
-| `host` | يُستبدل بدومين الهدف |
-| `connection` / `keep-alive` | هيدرز اتصال غير ضرورية |
-| `proxy-*` | هيدرز بروكسي مكشوفة |
-| `x-forwarded-*` | تمنع تسريب معلومات الشبكة |
-| `transfer-encoding` | يُعاد ضبطه تلقائياً |
-| `x-vercel-*` | هيدرز خاصة بالمنصة |
-
-## 🌍 متغيرات البيئة
-
-| المتغير | الوصف | القيمة الافتراضية |
-|---------|-------|-------------------|
-| `PORT` | منفذ تشغيل الخادم | `3000` |
-
-## 📝 ملاحظات
-
-- تأكد من أن سيرفرك الهدف يقبل الاتصالات من عناوين IP الخاصة بـ Replit
-- الرابط بعد النشر سيكون بصيغة: `https://اسم-المشروع.اسم-المستخدم.repl.co`
-- المشروع لا يحتاج أي `npm install` — يعمل بمكتبات Node.js الأساسية فقط
-
----
-
-<div align="center">
-
-## 👨‍💻 المطور
-
-**تم التطوير بواسطة الرفاعي**
-
-[![Telegram](https://img.shields.io/badge/Telegram-@alrufaaey-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/alrufaaey)
-
----
-
-<sub>إذا أعجبك المشروع، لا تنسَ ⭐ على GitHub</sub>
-
-</div>
