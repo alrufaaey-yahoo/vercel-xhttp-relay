@@ -1,16 +1,17 @@
 {
-  "name": "replit-xhttp-relay",
+  "name": "vercel-xhttp-relay",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
+  "description": "A lightweight XHTTP reverse relay deployed as a Vercel Serverless Function",
+  "main": "api/index.js",
   "scripts": {
+    "dev": "vercel dev",
     "start": "node index.js",
-    "build": "echo build done"
+    "build": "echo 'Vercel serverless function ready'"
   },
   "engines": {
     "node": ">=18.0.0"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "XHTTP Relay for Replit"
+  "keywords": ["vercel", "xhttp", "relay", "reverse-proxy"],
+  "license": "ISC"
 }
